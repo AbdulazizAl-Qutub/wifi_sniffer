@@ -320,8 +320,11 @@ class LightweightCapture:
                 except Exception:
                     continue
 
-            with open(self.db_path, "w") as f:
-                json.dump(active, f, indent=2)
+            try:
+                with open(self.db_path, "w") as f:
+                    json.dump(active, f, indent=2)
+            except IOError as e:
+                print(f"[!] Failed to save device database: {e}")
 
     def get_devices_snapshot(self):
 

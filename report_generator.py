@@ -13,6 +13,10 @@ class ReportGenerator:
     
     def generate_json_report(self, analyses, timestamp=None):
         """Generate full JSON intelligence report"""
+        if not analyses:
+            print("[!] No data to generate report")
+            return None
+        
         timestamp = timestamp or datetime.now().strftime("%Y%m%d_%H%M%S")
         
         # Organize by threat level
@@ -20,11 +24,11 @@ class ReportGenerator:
             "report_time": datetime.now().isoformat(),
             "total_devices_detected": len(analyses),
             "summary": {
-                "smartphones": sum(1 for a in analyses.values() if a['classification'] == 'Smartphone'),
-                "laptops": sum(1 for a in analyses.values() if a['classification'] == 'Laptop'),
-                "iot_devices": sum(1 for a in analyses.values() if a['classification'] == 'IoT Device'),
-                "beacons": sum(1 for a in analyses.values() if a['classification'] == 'Beacon/Tracker'),
-                "unknown": sum(1 for a in analyses.values() if a['classification'] == 'Unknown'),
+                "smartphones": sum(1 for a in analyses.values() if a.get('classification') == 'Smartphone'),
+                "laptops": sum(1 for a in analyses.values() if a.get('classification') == 'Laptop'),
+                "iot_devices": sum(1 for a in analyses.values() if a.get('classification') == 'IoT Device'),
+                "beacons": sum(1 for a in analyses.values() if a.get('classification') == 'Beacon/Tracker'),
+                "unknown": sum(1 for a in analyses.values() if a.get('classification') == 'Unknown'),
                 "suspicious_devices": sum(1 for a in analyses.values() if a.get('anomaly_score', 0) > 0.5)
             },
             "devices": []
@@ -35,36 +39,48 @@ class ReportGenerator:
             report["devices"].append(device_entry)
         
         path = f"{self.output_dir}/intel_report_{timestamp}.json"
-        with open(path, 'w') as f:
-            json.dump(report, f, indent=2)
-        print(f"[+] Report saved: {path}")
-        return path
+        try:
+            with open(path, 'w') as f:
+                json.dump(report, f, indent=2)
+            print(f"[+] Report saved: {path}")
+            return path
+        except IOError as e:
+            print(f"[!] Failed to save report: {e}")
+            return None
     
     def generate_csv_report(self, analyses, timestamp=None):
         """Generate CSV for spreadsheet/external tool import"""
+        if not analyses:
+            print("[!] No data to generate CSV report")
+            return None
+        
         timestamp = timestamp or datetime.now().strftime("%Y%m%d_%H%M%S")
         path = f"{self.output_dir}/intel_report_{timestamp}.csv"
         
-        with open(path, 'w', newline='') as f:
-            writer = csv.writer(f)
-            writer.writerow([
-                "MAC", "Classification", "Confidence", "Vendor", 
-                "Anomaly Score", "Behavioral Profile", "Signal (dBm)",
-                "Networks Probed", "Tracking Duration (s)"
-            ])
-            
-            for mac, analysis in sorted(analyses.items()):
+        try:
+            with open(path, 'w', newline='') as f:
+                writer = csv.writer(f)
                 writer.writerow([
-                    mac,
-                    analysis.get('classification', 'Unknown'),
-                    analysis.get('confidence', 0),
-                    analysis.get('vendor', 'Unknown'),
-                    analysis.get('anomaly_score', 0),
-                    analysis.get('behavioral_profile', ''),
-                    analysis.get('avg_signal_dbm', ''),
-                    ', '.join(analysis.get('probed_networks', [])[:5]),
-                    analysis.get('tracking_duration_sec', 0)
+                    "MAC", "Classification", "Confidence", "Vendor", 
+                    "Anomaly Score", "Behavioral Profile", "Signal (dBm)",
+                    "Networks Probed", "Tracking Duration (s)"
                 ])
-        
-        print(f"[+] CSV report saved: {path}")
-        return path
+                
+                for mac, analysis in sorted(analyses.items()):
+                    writer.writerow([
+                        mac,
+                        analysis.get('classification', 'Unknown'),
+                        analysis.get('confidence', 0),
+                        analysis.get('vendor', 'Unknown'),
+                        analysis.get('anomaly_score', 0),
+                        analysis.get('behavioral_profile', ''),
+                        analysis.get('avg_signal_dbm', ''),
+                        ', '.join(analysis.get('probed_networks', [])[:5]),
+                        analysis.get('tracking_duration_sec', 0)
+                    ])
+            
+            print(f"[+] CSV report saved: {path}")
+            return path
+        except IOError as e:
+            print(f"[!] Failed to save CSV report: {e}")
+            return None

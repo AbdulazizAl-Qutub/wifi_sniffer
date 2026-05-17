@@ -90,6 +90,9 @@ class LightweightDeviceClassifier:
         Get probability distribution across all classes
         feature_vector: array of 10 normalized features
         """
+        if len(feature_vector) != 10:
+            return np.array([0.0, 0.0, 0.0, 0.0, 0.0, 1.0])  # Return Unknown
+        
         num_probe, diversity, avg_rssi, rssi_std, pkt_rate = feature_vector[:5]
         active_window, regularity, vendor_code, mobile, hour = feature_vector[5:]
         
@@ -104,7 +107,8 @@ class LightweightDeviceClassifier:
             # 1. SSID probe count score
             lo, hi = rule['probe_ssids_range']
             if lo <= num_probe <= hi:
-                score += 0.3 * (1 - abs(num_probe - (lo+hi)/2) / ((hi-lo) if (hi-lo) > 0 else 1))
+                range_val = (hi - lo) if (hi - lo) > 0 else 1
+                score += 0.3 * (1 - abs(num_probe - (lo + hi) / 2) / range_val)
             else:
                 score += 0.1  # Low baseline
             components += 0.3

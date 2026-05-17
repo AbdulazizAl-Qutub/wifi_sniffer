@@ -91,19 +91,32 @@ class FeatureEngineer:
     def batch_extract(self):
         """Extract features from all devices in database"""
         if not os.path.exists(self.db_path):
-            return [], []
+            return np.array([]), []
         
-        with open(self.db_path, 'r') as f:
-            devices = json.load(f)
+        try:
+            with open(self.db_path, 'r') as f:
+                devices = json.load(f)
+        except (json.JSONDecodeError, IOError):
+            return np.array([]), []
+        
+        if not devices:
+            return np.array([]), []
         
         feature_vectors = []
         mac_addresses = []
         
         for mac, data in devices.items():
-            feats = self.extract_features(data)
-            vector = [feats[name] for name in self.feature_names]
-            feature_vectors.append(vector)
-            mac_addresses.append(mac)
+            try:
+                feats = self.extract_features(data)
+                vector = [feats[name] for name in self.feature_names]
+                feature_vectors.append(vector)
+                mac_addresses.append(mac)
+            except Exception as e:
+                print(f"[!] Error extracting features for {mac}: {e}")
+                continue
+        
+        if not feature_vectors:
+            return np.array([]), []
         
         return np.array(feature_vectors), mac_addresses
     

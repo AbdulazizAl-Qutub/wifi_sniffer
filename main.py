@@ -90,7 +90,7 @@ class WiFiSnifferAI:
         # Extract features from all devices
         feature_vectors, macs = self.feature_engineer.batch_extract()
         
-        if len(macs) == 0:
+        if len(macs) == 0 or len(feature_vectors) == 0:
             print("  No devices to analyze")
             return
         
@@ -162,7 +162,10 @@ class WiFiSnifferAI:
             self.capture.stop()
         
         # Final analysis
-        self._run_analysis()
+        try:
+            self._run_analysis()
+        except Exception as e:
+            print(f"[!] Error during final analysis: {e}")
         
         print("[+] Done. Reports saved to ./reports/")
         print("[+] Device database saved to ./data/captured_devices.json")
@@ -192,6 +195,15 @@ def main():
     # Check root
     if os.geteuid() != 0:
         print("[!] Must run as root. Use: sudo python3 main.py")
+        sys.exit(1)
+    
+    # Validate interface exists
+    if not os.path.exists(f"/sys/class/net/{args.interface}"):
+        print(f"[!] Interface {args.interface} not found")
+        print("[!] Available interfaces:")
+        os.system("ip link show | grep -E '^[0-9]+:' | awk '{print $2}' | sed 's/:$//'")
+        print("\n[!] Enable monitor mode first:")
+        print(f"    sudo airmon-ng start wlan0")
         sys.exit(1)
     
     app = WiFiSnifferAI(interface=args.interface)

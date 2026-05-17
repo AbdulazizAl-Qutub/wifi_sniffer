@@ -16,7 +16,7 @@ from report_generator import ReportGenerator
 class WiFiSnifferAI:
     """Main orchestrator - ties capture, AI, and reporting together"""
     
-    def __init__(self, interface="wlan1mon"):
+    def __init__(self, interface="wlan0mon"):
         self.interface = interface
         self.running = False
         
@@ -171,8 +171,8 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(description="WiFi-Sniffer-AI - Lightweight Wireless Intelligence Platform")
-    parser.add_argument("-i", "--interface", default="wlan1mon",
-                       help="Monitor mode interface (default: wlan1mon)")
+    parser.add_argument("-i", "--interface", default="wlan0mon",
+                       help="Monitor mode interface (default: wlan0mon)")
     parser.add_argument("-t", "--time", type=int, default=None,
                        help="Capture duration in seconds (default: run until Ctrl+C)")
     parser.add_argument("-r", "--report-interval", type=int, default=30,
@@ -185,8 +185,8 @@ def main():
     if args.setup:
         print("[+] Setting up monitor mode...")
         os.system(f"sudo airmon-ng check kill")
-        os.system(f"sudo airmon-ng start wlan1")
-        print("[+] Setup complete. Interface ready: wlan1mon")
+        os.system(f"sudo airmon-ng start wlan0")
+        print("[+] Setup complete. Interface ready: wlan0mon")
         return
     
     # Check root

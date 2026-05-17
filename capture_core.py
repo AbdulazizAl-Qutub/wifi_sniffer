@@ -19,7 +19,7 @@ class LightweightCapture:
 
     def __init__(
         self,
-        interface="wlan1mon",
+        interface="wlan0mon",
         db_path="data/captured_devices.json"
     ):
 
@@ -205,7 +205,7 @@ class LightweightCapture:
             print(f"[!] Interface error: {e}")
             print("[!] Make sure monitor mode is enabled")
             print("    Example:")
-            print("    sudo airmon-ng start wlan1")
+            print("    sudo airmon-ng start wlan0")
 
             return
 
@@ -333,7 +333,7 @@ if __name__ == "__main__":
 
     import sys
 
-    iface = sys.argv[1] if len(sys.argv) > 1 else "wlan1mon"
+    iface = sys.argv[1] if len(sys.argv) > 1 else "wlan0mon"
 
     cap = LightweightCapture(interface=iface)
 

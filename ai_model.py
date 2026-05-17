@@ -1,3 +1,4 @@
+"""
 ai_model.py - Ultra-lightweight decision rules + statistical classifier
 No sklearn/pytorch required - pure numpy implementation
 Designed for ~200KB RAM usage during inference

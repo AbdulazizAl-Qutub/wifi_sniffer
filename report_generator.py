@@ -7,7 +7,7 @@ import os
 from datetime import datetime
 
 class ReportGenerator:
-    def _init_(self, output_dir="reports"):
+    def __init__(self, output_dir="reports"):
         self.output_dir = output_dir
         os.makedirs(output_dir, exist_ok=True)
     

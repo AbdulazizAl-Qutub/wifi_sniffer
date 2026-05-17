@@ -55,10 +55,10 @@ python3 -c "import numpy; print('[+] NumPy OK')" 2>/dev/null || \
 echo "[*] Creating interface setup helper..."
 cat > setup_monitor.sh << 'SHELL'
 #!/bin/bash
-# Enable monitor mode on wlan1
+# Enable monitor mode on wlan0
 sudo airmon-ng check kill
-sudo airmon-ng start wlan1
-echo "[+] Monitor mode ready. Interface: wlan1mon"
+sudo airmon-ng start wlan0
+echo "[+] Monitor mode ready. Interface: wlan0mon"
 SHELL
 chmod +x setup_monitor.sh
 

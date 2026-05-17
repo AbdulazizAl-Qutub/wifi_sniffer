@@ -22,7 +22,7 @@ class LightweightDeviceClassifier:
     5 - Unknown/Other
     """
     
-    def _init_(self, model_path="models/device_classifier.json"):
+    def __init__(self, model_path="models/device_classifier.json"):
         self.model_path = model_path
         self.class_labels = ["Smartphone", "Laptop", "IoT Device", "Beacon/Tracker", "AP/Extender", "Unknown"]
         self.confidence_threshold = 0.35  # Minimum confidence to return a prediction
@@ -220,7 +220,7 @@ class LightweightDeviceClassifier:
             intel['avg_signal_dbm'] = round(np.mean(device_data['rssi_values']), 1)
         return intel
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     # Demo
     classifier = LightweightDeviceClassifier()
     sample_features = np.array([0.3, 0.4, 0.5, 0.3, 0.2, 0.4, 0.6, 0.7, 0.5, 0.3])

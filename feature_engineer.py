@@ -11,7 +11,7 @@ from datetime import datetime
 class FeatureEngineer:
     """Convert raw device data to numerical feature vectors"""
     
-    def _init_(self, db_path="data/captured_devices.json"):
+    def __init__(self, db_path="data/captured_devices.json"):
         self.db_path = db_path
         self.feature_names = [
             'num_probe_ssids',           # How many networks they're looking for
@@ -121,7 +121,7 @@ class FeatureEngineer:
         }
         return summary
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     import sys
     fe = FeatureEngineer()
     vectors, macs = fe.batch_extract()

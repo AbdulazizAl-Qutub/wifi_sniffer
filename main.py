@@ -16,7 +16,7 @@ from report_generator import ReportGenerator
 class WiFiSnifferAI:
     """Main orchestrator - ties capture, AI, and reporting together"""
     
-    def _init_(self, interface="wlan1mon"):
+    def __init__(self, interface="wlan1mon"):
         self.interface = interface
         self.running = False
         
@@ -197,5 +197,5 @@ def main():
     app = WiFiSnifferAI(interface=args.interface)
     app.run(duration_seconds=args.time, report_interval=args.report_interval)
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     main()
